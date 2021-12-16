@@ -1,2 +1,9 @@
-Hello {{ name|title }}
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>Hello {{ name|title }}</h1>
 <!--FILTERS: safe, capitalize, lower, upper, title, trim, striptags -->
+
+{% endblock %}
