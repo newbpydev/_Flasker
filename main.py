@@ -31,7 +31,6 @@ def name():
 
     print(f'monkey {person_name}')
     if form.validate_on_submit():
-        print('I am in')
         person_name = form.name.data
         form.name = ''
 
