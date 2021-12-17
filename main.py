@@ -34,6 +34,8 @@ def name():
         person_name = form.name.data
         form.name = ''
 
+        flash(message='Form submitted successfully')
+
     return render_template('name.html', name=person_name, form=form)
 
 
