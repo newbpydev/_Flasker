@@ -117,7 +117,29 @@ def update_user(id):
             flash('Looks like there was a problem, try again!')
             return render_template('update_user.html', form=form, name_to_update=name_to_update)
     else:
-        return render_template('update_user.html', form=form, name_to_update=name_to_update)
+        return render_template('update_user.html', form=form, name_to_update=name_to_update, id=id)
+
+
+@app.route('/delete/<int:id>', methods=['GET', 'POST'])
+def delete_user(id):
+    user_to_delete = Users.query.get_or_404(id)
+    person_name = None
+    form = UserForm()
+
+    try:
+        db.session.delete(user_to_delete)
+        db.session.commit()
+
+        flash('User Delete Successfully!')
+        our_users = Users.query.order_by(Users.date_added).all()
+        return render_template('add_user.html', form=form, name=person_name, our_users=our_users)
+    except:
+        flash('There was a problem deleting user, try again!')
+        return render_template('add_user.html', form=form, name=person_name, our_users=our_users)
+    # finally:
+    #     return render_template('add_user.html', form=form, name=person_name, our_users=our_users)
+
+    return render_template('delete_user.html')
 
 
 # create a name page

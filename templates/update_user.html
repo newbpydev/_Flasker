@@ -31,6 +31,7 @@
 			{{ form.favorite_color(class="form-control", value=name_to_update.favorite_color) }}
 			<br>
 			{{ form.submit(class="btn btn-secondary") }}
+			<a href="{{ url_for('delete_user', id=id) }}"><button type="button" class="btn btn-danger">Delete</button></a>
 		</form>
 	</div>
 

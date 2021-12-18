@@ -43,6 +43,7 @@
 	      <th scope="col">Name</th>
 	      <th scope="col">Email</th>
 		    <th scope="col">Color</th>
+		    <th scope="col">Delete</th>
 	    </tr>
 	  </thead>
 		
@@ -53,6 +54,7 @@
 	      <td><a href="{{ url_for('update_user', id=our_user.id) }}">{{ our_user.name }}</a></td>
 	      <td>{{ our_user.email }}</td>
 		    <td>{{ our_user.favorite_color }}</td>
+		    <td><a href="{{ url_for('delete_user', id=our_user.id) }}">❌</a></td>
 	      
 	    </tr>
 		{% endfor %}
