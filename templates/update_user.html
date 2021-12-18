@@ -17,18 +17,18 @@
 	<img src="{{ url_for('static', filename='images/discs.jpg') }}" alt="A random image">
 	<br><br>
 {% else %}
-	<h1>User List:</h1><br>
+	<h1>Update User</h1><br>
 	<div class="shadow p-3 mb-5 bg-body rounded">
-		<form method="post">
+		<form method="post" action="/update/{{ name_to_update.id }}">
 			{{ form.hidden_tag() }}
 			{{ form.name.label(class="form-label") }}
-			{{ form.name(class="form-control") }}
+			{{ form.name(class="form-control", value=name_to_update.name) }}
 			
 			{{ form.email.label(class="form-label") }}
-			{{ form.email(class="form-control") }}
+			{{ form.email(class="form-control", value=name_to_update.email) }}
 			
 			{{ form.favorite_color.label(class="form-label") }}
-			{{ form.favorite_color(class="form-control") }}
+			{{ form.favorite_color(class="form-control", value=name_to_update.favorite_color) }}
 			<br>
 			{{ form.submit(class="btn btn-secondary") }}
 		</form>
@@ -36,28 +36,26 @@
 
 	<br><br><br>
 
-	<table class="table table-hover">
-	  <thead>
-	    <tr>
-	      <th scope="col">id</th>
-	      <th scope="col">Name</th>
-	      <th scope="col">Email</th>
-		    <th scope="col">Color</th>
-	    </tr>
-	  </thead>
-		
-	  <tbody>
-	    {% for our_user in our_users  %}
-	    <tr>
-	      <th scope="row">{{ our_user.id }}</th>
-	      <td><a href="{{ url_for('update_user', id=our_user.id) }}">{{ our_user.name }}</a></td>
-	      <td>{{ our_user.email }}</td>
-		    <td>{{ our_user.favorite_color }}</td>
-	      
-	    </tr>
-		{% endfor %}
-	  </tbody>
-	</table>
+<!--	<table class="table table-hover">-->
+<!--	  <thead>-->
+<!--	    <tr>-->
+<!--	      <th scope="col">id</th>-->
+<!--	      <th scope="col">Name</th>-->
+<!--	      <th scope="col">Email</th>-->
+<!--	    </tr>-->
+<!--	  </thead>-->
+<!--		-->
+<!--	  <tbody>-->
+<!--	    {% for our_user in our_users  %}-->
+<!--	    <tr>-->
+<!--	      <th scope="row">{{ our_user.id }}</th>-->
+<!--	      <td>{{ our_user.name }}</td>-->
+<!--	      <td>{{ our_user.email }}</td>-->
+<!--	      -->
+<!--	    </tr>-->
+<!--		{% endfor %}-->
+<!--	  </tbody>-->
+<!--	</table>-->
 
 
 {% endif %}

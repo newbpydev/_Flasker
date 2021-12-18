@@ -1,0 +1,4 @@
+Flask~=1.1.2
+WTForms~=2.3.3
+rich~=10.16.1
+mysql-connector-python~=8.0.27
