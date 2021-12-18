@@ -1,12 +1,13 @@
 from flask import Flask, render_template, flash, request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DateTimeField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, ValidationError
+from wtforms.validators import DataRequired, EqualTo, Length
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_script import Manager
 from flask_migrate import Migrate
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from rich import print
 
@@ -40,6 +41,19 @@ class Users(db.Model):
     email = db.Column(db.String(255), nullable=False, unique=True)
     favorite_color = db.Column(db.String(120))
     date_added = db.Column(db.DateTime, default=now)
+    # password magic
+    password_hash = db.Column(db.String(128), nullable=False)
+
+    @property
+    def password(self):
+        raise AttributeError('Password is not readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     # Create a string
     def __repr__(self):
@@ -54,6 +68,8 @@ class UserForm(FlaskForm):
     name = StringField(label="Name", validators=[DataRequired()], render_kw={'autofocus': True})
     email = StringField(label="Email?", validators=[DataRequired()])
     favorite_color = StringField(label="Favorite Color")
+    password_hash = PasswordField(label="Password", validators=[DataRequired(), EqualTo('password_hash2', message="Passwords must match")])
+    password_hash2 = PasswordField(label="Confirm Password", validators=[DataRequired()])
     submit = SubmitField(label="Submit")
 
 
@@ -81,10 +97,14 @@ def add_user():
     if form.validate_on_submit():
         user_info = db.session.query(Users).filter_by(email=form.email.data).first()
         if user_info is None:
+            # Hash the password
+            hashed_pw = generate_password_hash(form.password_hash.data, method='sha256')
+
             new_user = Users(
                 name=form.name.data,
                 email=form.email.data,
                 favorite_color=form.favorite_color.data,
+                password_hash=hashed_pw,
             )
             db.session.add(new_user)
             db.session.commit()
@@ -92,6 +112,8 @@ def add_user():
             form.name.data = ''
             form.email.data = ''
             form.favorite_color.data = ''
+            form.password_hash.data = ''
+
             flash('User added successfully!')
 
     our_users = Users.query.order_by(Users.date_added).all()
