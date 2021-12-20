@@ -2,6 +2,7 @@ from flask import Flask, render_template, flash, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, ValidationError
 from wtforms.validators import DataRequired, EqualTo, Length
+from wtforms.widgets import TextArea
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_script import Manager
@@ -60,6 +61,16 @@ class Users(db.Model):
         return '<Name %r>' % self.name
 
 
+# Create a Blog Post model
+class Posts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250), nullable=False)
+    author = db.Column(db.String(250), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow())
+    slug = db.Column(db.String(255), nullable=False)
+
+
 db.create_all()
 
 
@@ -76,6 +87,15 @@ class UserForm(FlaskForm):
 # create a form class
 class NameForm(FlaskForm):
     name = StringField(label="What's your name?", validators=[DataRequired()])
+    submit = SubmitField(label="Submit")
+
+
+# Create a blog form
+class PostForm(FlaskForm):
+    title = StringField(label="Title", validators=[DataRequired()])
+    content = StringField(label="Content", validators=[DataRequired()], widget=TextArea())
+    author = StringField(label="Author", validators=[DataRequired()])
+    slug = StringField(label="Slug", validators=[DataRequired()])
     submit = SubmitField(label="Submit")
 
 
@@ -178,6 +198,39 @@ def name():
         flash(message='Form submitted successfully')
 
     return render_template('name.html', name=person_name, form=form)
+
+
+@app.route('/add-post', methods=['POST', 'GET'])
+def add_post():
+    form = PostForm()
+
+    if form.validate_on_submit():
+        post = Posts(
+            title=form.title.data,
+            content=form.content.data,
+            author=form.author.data,
+            slug=form.slug.data,
+        )
+        # Add post to database
+        db.session.add(post)
+        db.session.commit()
+
+        flash('Blog post added successfully')
+
+        # clear the form before resending
+        form.title.data = ''
+        form.content.data = ''
+        form.author.data = ''
+        form.slug.data = ''
+
+    return render_template('add_post.html',
+                           form=form)
+
+
+@app.route('/posts')
+def posts():
+
+    return render_template('posts.html')
 
 
 # Create custom error pages
